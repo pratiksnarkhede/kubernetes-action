@@ -37,4 +37,4 @@ jobs:
       run: aws eks --region your-region update-kubeconfig --name your-cluster-name
 
     - name: Deploy your application (replace with your deployment steps)
-      run: kubectl apply -f your-application-deployment.yaml
+      run: kubectl apply -f deployment.yaml
