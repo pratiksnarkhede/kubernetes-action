@@ -1,0 +1,40 @@
+name: AWS EKS Deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: your-region
+
+    - name: Install kubectl
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -q -y kubectl
+
+    - name: Install eksctl
+      run: |
+        sudo curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/0.62.0/eksctl_Linux_amd64.tar.gz" | sudo tar xz -C /tmp
+        sudo mv /tmp/eksctl /usr/local/bin
+
+    - name: Create EKS cluster
+      run: eksctl create cluster --region your-region --name your-cluster-name --nodes=2 --node-type=t2.small
+
+    - name: Configure kubectl
+      run: aws eks --region your-region update-kubeconfig --name your-cluster-name
+
+    - name: Deploy your application (replace with your deployment steps)
+      run: kubectl apply -f your-application-deployment.yaml
